@@ -33,6 +33,7 @@ export default class NewsList extends Component {
     page: 1,
     offset: 1,
     initialLoading: true,
+    refreshControlLoader: false,
   };
 
   ref = React.createRef();
@@ -82,11 +83,16 @@ export default class NewsList extends Component {
             page: state.page + 1,
             offset: (state.page - 1) * count,
             initialLoading: false,
+            refreshControlLoader: false,
           };
         });
       })
       .catch((error) => {
-        this.setState({loading: false});
+        this.setState({
+          loading: false,
+          initialLoading: false,
+          refreshControlLoader: false,
+        });
         alert(error);
       });
   };
@@ -242,7 +248,7 @@ export default class NewsList extends Component {
   fetchNextData = debounce(this.fetchData, 2000);
 
   onRefresh = () => {
-    this.setState({page: 1, offset: 1}, () => {
+    this.setState({page: 1, offset: 1, refreshControlLoader: true}, () => {
       this.fetchData();
     });
   };
@@ -345,7 +351,7 @@ export default class NewsList extends Component {
             removeClippedSubviews={true}
             windowSize={50}
             onRefresh={this.onRefresh}
-            refreshing={this.state.loading}
+            refreshing={this.state.refreshControlLoader}
             ListFooterComponent={this.renderFooterComponent}
             ListHeaderComponent={this.renderHeaderComponent}
           />
